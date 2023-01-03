@@ -201,6 +201,15 @@ cat >> "$HOOKFILE" <<EOF
 export GI_TYPELIB_PATH="\$APPDIR/$gi_typelibsdir"
 EOF
 
+echo "Installing GIO modules"
+gio_moduledir="$(get_pkgconf_variable "giomoduledir" "gio-2.0" "/usr/lib/x86_64-linux-gnu/gio/modules")"
+copy_tree "$gio_moduledir" "$APPDIR/"
+
+echo "Installing GTK Webkit"
+# webkit2-
+gtk_webkitdir="$(get_pkgconf_variable "webkit2moduledir" "webkit2gtk-4.0" "/usr/lib/x86_64-linux-gnu/webkit2gtk-4.0")"
+copy_tree "$gtk_webkitdir" "$APPDIR/"
+
 case "$DEPLOY_GTK_VERSION" in
     2)
         # https://github.com/linuxdeploy/linuxdeploy-plugin-gtk/pull/20#issuecomment-826354261
@@ -279,14 +288,19 @@ librsvg_libdir="$(get_pkgconf_variable "libdir" "librsvg-2.0" "/usr/lib/x86_64-l
 pango_libdir="$(get_pkgconf_variable "libdir" "pango" "/usr/lib/x86_64-linux-gnu")"
 pangocairo_libdir="$(get_pkgconf_variable "libdir" "pangocairo" "/usr/lib/x86_64-linux-gnu")"
 pangoft2_libdir="$(get_pkgconf_variable "libdir" "pangoft2" "/usr/lib/x86_64-linux-gnu")"
+javascriptcore_libdir="$(get_pkgconf_variable "libdir" "javascriptcoregtk-4.0" "/usr/lib/x86_64-linux-gnu")"
+webkit2_libdir="$(get_pkgconf_variable "libdir" "webkitgtk2-4.0" "/usr/lib/x86_64-linux-gnu")"
 FIND_ARRAY=(
-    "$gdk_libdir"     "libgdk_pixbuf-*.so*"
-    "$gobject_libdir" "libgobject-*.so*"
-    "$gio_libdir"     "libgio-*.so*"
-    "$librsvg_libdir" "librsvg-*.so*"
-    "$pango_libdir"      "libpango-*.so*"
-    "$pangocairo_libdir" "libpangocairo-*.so*"
-    "$pangoft2_libdir"   "libpangoft2-*.so*"
+    "$gdk_libdir"               "libgdk_pixbuf-*.so*"
+    "$gobject_libdir"           "libgobject-*.so*"
+    "$gio_libdir"               "libgio-*.so*"
+    "$librsvg_libdir"           "librsvg-*.so*"
+    "$pango_libdir"             "libpango-*.so*"
+    "$pangocairo_libdir"        "libpangocairo-*.so*"
+    "$pangoft2_libdir"          "libpangoft2-*.so*"
+    "$javascriptcore_libdir"    "libjavascriptcoregtk*.so*"
+    "$webkit2_libdir"           "libwebkit*.so*"
+
 )
 LIBRARIES=()
 for (( i=0; i<${#FIND_ARRAY[@]}; i+=2 )); do
